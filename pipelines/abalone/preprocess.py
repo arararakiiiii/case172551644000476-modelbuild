@@ -15,6 +15,13 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
+# ------ aditional ----------
+import sagemaker
+import time
+from sagemaker.feature_store.feature_group import FeatureGroup
+from time import gmtime, strftime, sleep
+# --------------------------
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
@@ -47,14 +54,13 @@ label_column_dtype = {"rings": np.float64}
 
 
 # -------------------------------
-import datetime
-now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-
-client = boto3.client("sagemaker", region_name="ap-northeast-1")
-client.create_user_profile(
-    DomainId='d-ugctifxcc9ts',
-    UserProfileName='test'+now
-)
+def check_feature_group_status(feature_group):
+    status = feature_group.describe().get("FeatureGroupStatus")
+    while status == "Creating":
+        print("Waiting for Feature Group to be Created")
+        time.sleep(5)
+        status = feature_group.describe().get("FeatureGroupStatus")
+    print(f"FeatureGroup {feature_group.name} successfully created.")
 # -------------------------------
 
 
