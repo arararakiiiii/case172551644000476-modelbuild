@@ -46,6 +46,18 @@ feature_columns_dtype = {
 label_column_dtype = {"rings": np.float64}
 
 
+# -------------------------------
+import datetime
+now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+
+client = boto3.client("sagemaker", region_name="ap-northeast-1")
+client.create_user_profile(
+    DomainId='d-ugctifxcc9ts',
+    UserProfileName='test'+now
+)
+# -------------------------------
+
+
 def merge_two_dicts(x, y):
     """Merges two dicts, returning a new copy."""
     z = x.copy()
