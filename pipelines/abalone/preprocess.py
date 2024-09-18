@@ -104,10 +104,6 @@ if __name__ == "__main__":
     event_time_name = 'EventTime'
     feature_description = "feature group for new items of Animation genre"
     
-    offline_feature_store_bucket = f"s3://{sagemaker_session.default_bucket()}/realtime-data-input"
-    offline_config = {"OfflineStoreConfig":{"S3StorageConfig": {
-         "S3Uri": offline_feature_store_bucket
-    }}}
 
     sagemaker_client = boto3.client("sagemaker", region_name="ap-northeast-1")
     sagemaker_client.create_feature_group(
