@@ -96,7 +96,8 @@ if __name__ == "__main__":
         {'FeatureName': 'whole_weight', 'FeatureType': 'Fractional'},
         {'FeatureName': 'shucked_weight', 'FeatureType': 'Fractional'},
         {'FeatureName': 'viscera_weight', 'FeatureType': 'Fractional'},
-        {'FeatureName': 'shell_weight', 'FeatureType': 'Fractional'}
+        {'FeatureName': 'shell_weight', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'EventTime', 'FeatureType': 'Fractional'}
     ]
 
     feature_group_name = 'case-feature-group'
