@@ -15,13 +15,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-# ------ aditional ----------
-import sagemaker
-import time
-from sagemaker.feature_store.feature_group import FeatureGroup
-from time import gmtime, strftime, sleep
-# --------------------------
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
@@ -51,18 +44,6 @@ feature_columns_dtype = {
     "shell_weight": np.float64,
 }
 label_column_dtype = {"rings": np.float64}
-
-
-# -------------------------------
-def check_feature_group_status(feature_group):
-    status = feature_group.describe().get("FeatureGroupStatus")
-    while status == "Creating":
-        print("Waiting for Feature Group to be Created")
-        time.sleep(5)
-        status = feature_group.describe().get("FeatureGroupStatus")
-    print(f"FeatureGroup {feature_group.name} successfully created.")
-# -------------------------------
-
 
 def merge_two_dicts(x, y):
     """Merges two dicts, returning a new copy."""
