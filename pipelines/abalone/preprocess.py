@@ -15,6 +15,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
+import time
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
@@ -77,6 +79,46 @@ if __name__ == "__main__":
         dtype=merge_two_dicts(feature_columns_dtype, label_column_dtype),
     )
     os.unlink(fn)
+
+# -------------------------
+
+    current_time_sec = int(round(time.time()))
+    event_time_feature_name = "EventTime"
+    df_fs = df.copy()
+    df_fs[event_time_feature_name] = pd.Series([current_time_sec]*len(df_fs), dtype="float64")
+    role = "arn:aws:iam::885565098420:role/service-role/AmazonSageMaker-ExecutionRole-20221130T092418"
+
+    feature_definition = [
+        {'FeatureName': 'sex', 'FeatureType': 'String'},
+        {'FeatureName': 'length', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'diameter', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'height', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'whole_weight', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'shucked_weight', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'viscera_weight', 'FeatureType': 'Fractional'},
+        {'FeatureName': 'shell_weight', 'FeatureType': 'Fractional'}
+    ]
+
+    feature_group_name = 'case-feature-group'
+    record_identifier_name = 'sex'
+    event_time_name = 'EventTime'
+    feature_description = "feature group for new items of Animation genre"
+    
+    offline_feature_store_bucket = f"s3://{sagemaker_session.default_bucket()}/realtime-data-input"
+    offline_config = {"OfflineStoreConfig":{"S3StorageConfig": {
+         "S3Uri": offline_feature_store_bucket
+    }}}
+
+    sagemaker_client = boto3.client("sagemaker", region_name="ap-northeast-1")
+    sagemaker_client.create_feature_group(
+            FeatureGroupName = feature_group_name,
+            RecordIdentifierFeatureName = record_identifier_name,
+            EventTimeFeatureName = event_time_name,
+            FeatureDefinitions = feature_definition,
+            Description = feature_description,
+            OnlineStoreConfig = {'EnableOnlineStore': True},
+            RoleArn = role)
+# -------------------------
 
     logger.debug("Defining transformers.")
     numeric_features = list(feature_columns_names)
